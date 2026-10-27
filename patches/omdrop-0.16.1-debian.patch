@@ -1,0 +1,32 @@
+diff --git a/bin/omdrop b/bin/omdrop
+index 4f5ba6c..b8bbb91 100755
+--- a/bin/omdrop
++++ b/bin/omdrop
+@@ -55,6 +55,17 @@ PROJ="$(cd "$(dirname "$SELF")/.." && pwd)"
+ # defect as a status line reporting a state that was never entered, so this one
+ # says when it is guessing, and says when the two disagree.
+ VERSION_FALLBACK=0.16.1
++# Use the system Python and libraries installed through apt on this host.
++export PATH="/usr/bin:/bin:$PATH"
++# Debian/Ubuntu do not ship Arch's vercmp. These comparisons use numeric
++# upstream versions, for which dpkg provides equivalent ordering.
++if ! command -v vercmp >/dev/null 2>&1 && command -v dpkg >/dev/null 2>&1; then
++  vercmp() {
++    if dpkg --compare-versions "$1" lt "$2"; then echo -1
++    elif dpkg --compare-versions "$1" gt "$2"; then echo 1
++    else echo 0; fi
++  }
++fi
+ omdrop_version() {
+   local dir manifest version= real
+   real=$(readlink -f "$0" 2>/dev/null) || real="$0"
+@@ -445,8 +456,7 @@ plugin_dir() {
+ # in the keyring, and the receiver reads it through libkeyutils.
+ RECEIVER_PKGS="python-libarchive-c keyutils"
+ receiver_libs_installed() {
+-  python3 -c 'from libarchive import stream_reader' >/dev/null 2>&1 \
+-    && [[ -e /usr/lib/libkeyutils.so.1 ]]
++  python3 -c 'from libarchive import stream_reader; import ctypes; ctypes.CDLL("libkeyutils.so.1")' >/dev/null 2>&1
+ }
+ 
+ # The identity this computer presents to Apple devices: its certificate and

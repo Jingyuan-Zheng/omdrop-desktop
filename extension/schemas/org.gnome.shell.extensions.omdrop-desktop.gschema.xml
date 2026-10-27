@@ -1,0 +1,13 @@
+<schemalist>
+  <schema id="org.gnome.shell.extensions.omdrop-desktop" path="/org/gnome/shell/extensions/omdrop-desktop/">
+    <key name="window" type="s">
+      <default>'10m'</default>
+      <summary>Default receive window</summary>
+      <choices>
+        <choice value="once"/><choice value="1m"/><choice value="5m"/>
+        <choice value="10m"/><choice value="15m"/><choice value="30m"/>
+        <choice value="60m"/><choice value="forever"/>
+      </choices>
+    </key>
+  </schema>
+</schemalist>

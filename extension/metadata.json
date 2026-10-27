@@ -1,0 +1,8 @@
+{
+  "uuid": "omdrop-desktop@local",
+  "name": "Omdrop Desktop",
+  "description": "AirDrop frontend for GNOME: receive windows, contacts, nearby devices, radar and file transfers. Requires the Omdrop CLI and a compatible radio backend.",
+  "shell-version": ["46"],
+  "version": 1,
+  "settings-schema": "org.gnome.shell.extensions.omdrop-desktop"
+}

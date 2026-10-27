@@ -1,0 +1,30 @@
+name: Bug report
+description: Report a reproducible frontend problem
+body:
+  - type: markdown
+    attributes:
+      value: Do not attach private keys, contacts, identities, MAC addresses or packet captures. Use a private channel for security problems.
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Distribution, GNOME/Nautilus version, Omdrop/backend versions, adapter and driver if relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Distinguish a fixture test from an actual Apple-device transfer. Redact names and identifiers.

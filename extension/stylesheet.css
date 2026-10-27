@@ -1,0 +1,9 @@
+.omdrop-menu { min-width: 340px; max-width: 420px; }
+.omdrop-menu .popup-menu-item { padding-top: 6px; padding-bottom: 6px; }
+.omdrop-heading { font-size: 17px; font-weight: bold; }
+.omdrop-detail { font-size: 11px; color: #aaa; }
+.omdrop-status { max-width: 330px; }
+.omdrop-error { color: #f6a8a8; }
+.omdrop-active { color: #8ad3bc; }
+.omdrop-radar { width: 280px; height: 200px; margin: 4px 22px; }
+.omdrop-entry { min-width: 280px; margin: 12px 0; }
