@@ -2,6 +2,7 @@
 import importlib.util
 from pathlib import Path
 import sys
+import time
 from gi.repository import GLib
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -56,8 +57,35 @@ def finish():
 
 def ready(_app):
     print('GTK fixture window ready',flush=True)
-    for delay,callback in [(700,start),(1800,send),(2200,cancel),(3000,stop),(4000,finish)]:
-        GLib.timeout_add(delay,guarded(callback))
+    state = {'stage': 0}
+    deadline = time.monotonic() + 35
+    def advance():
+        try:
+            if time.monotonic() > deadline:
+                raise AssertionError(f'Timed out at stage {state["stage"]}: {app.status.get_text()} / {app.progress.get_text()}')
+            stage = state['stage']
+            if stage == 0 and app.status.get_text().startswith('Ready.'):
+                start()
+                state['stage'] = 1
+            elif stage == 1 and len(app.peers) == 2 and not app.busy and not app.scanning:
+                send()
+                state['stage'] = 2
+            elif stage == 2 and app.send_job and 'Preparing' in app.progress.get_text():
+                cancel()
+                state['stage'] = 3
+            elif stage == 3 and not app.busy and app.send_job is None:
+                stop()
+                state['stage'] = 4
+            elif stage == 4 and not app.receiving and not app.busy:
+                finish()
+                return GLib.SOURCE_REMOVE
+        except Exception as error:
+            errors.append(str(error))
+            app.close()
+            app.quit()
+            return GLib.SOURCE_REMOVE
+        return GLib.SOURCE_CONTINUE
+    GLib.timeout_add(100,advance)
 
 
 app.connect('activate',ready)
