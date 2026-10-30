@@ -8,6 +8,17 @@ right-click action with a GTK4 device picker**. The Omdrop CLI and a compatible
 AWDL radio backend must be installed separately. This is an independent frontend,
 not an official Omdrop or Apple release.
 
+## Preview
+
+<p>
+  <img src="docs/images/gnome-panel.png" width="350" alt="GNOME Shell panel showing receive controls, nearby demo devices and the radar">
+  <img src="docs/images/nautilus-sender.png" width="500" alt="GTK4 sender opened by the Nautilus action, showing selected demo files and nearby devices">
+</p>
+
+These are screenshots of the actual frontend in an isolated GNOME session,
+using an offline demo backend. Device names, file selections and radio status
+are demonstration data, not evidence of a live Apple-device transfer.
+
 ## Features
 
 - Receive switch, real visibility state, countdown and one-file/timed/manual receive windows.
@@ -130,7 +141,7 @@ sh scripts/test-ui.sh
 Only the Shell zip can be installed with `gnome-extensions install`; install the
 source package with `scripts/install.sh` for Nautilus support.
 Tests use a fake CLI and never turn on the real radio. Read [testing](docs/TESTING.md),
-[contribution guidance](CONTRIBUTING.md) and the [local GitHub upload checklist](docs/PUBLISHING.md).
+[contribution guidance](CONTRIBUTING.md) and the [publishing checklist](docs/PUBLISHING.md).
 
 ## License
 

@@ -1,15 +1,17 @@
-# Upload this prepared repository to GitHub
+# Publishing and releases
 
-The local repository is prepared on `main`. No remote is configured and no files
-have been uploaded. Do not upload the parent workspace: use this directory only.
+The canonical repository is [Jingyuan-Zheng/omdrop-desktop](https://github.com/Jingyuan-Zheng/omdrop-desktop),
+with development on `main`. Use this project directory only, not a parent
+workspace containing local installations or runtime data.
+
+## Publishing a fork or a new copy
 
 1. Review README.md, NOTICE.md, supported versions and the generated packages.
 2. Set your desired Git author identity for future commits. If you want to
    replace the neutral preparation author on the initial commit, configure
    `user.name` and `user.email`, then run `git commit --amend --reset-author --no-edit`.
 3. Create an **empty** GitHub repository. Do not initialize it with a separate
-   README or license. `omdrop-desktop` is a suggested repository name, not an
-   existing remote claimed by this source tree.
+   README or license. Choose a name and update project URLs if publishing a fork.
 4. Copy its actual URL and run:
 
 ```sh
@@ -39,5 +41,8 @@ the complete project and Nautilus installer. This repository deliberately has
 no workflow that automatically publishes a release or contacts other projects.
 
 The workflow uses no repository secrets and requests read-only contents access.
-No GitHub account, repository owner, sponsorship link or screenshot of a personal
-desktop has been invented for this source package.
+README screenshots are generated from the real UI in an isolated session using
+offline demonstration data. They contain no personal desktop content. To
+regenerate them on GNOME 46, set `OMDROP_DEMO_DIR` to an absolute output directory,
+set `LANGUAGE=en_IE`, then run `sh scripts/test-shell.sh`. Review both PNGs before
+committing them. The screenshot harness is not shipped in the Shell extension.

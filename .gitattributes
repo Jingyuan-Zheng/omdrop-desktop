@@ -1,4 +1,5 @@
 * text=auto eol=lf
 *.svg text
+*.png binary
 *.sh text eol=lf
 *.patch text eol=lf -whitespace

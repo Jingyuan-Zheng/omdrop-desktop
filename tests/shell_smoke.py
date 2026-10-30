@@ -37,6 +37,11 @@ def inside():
     subprocess.run(['gsettings','set','org.gnome.shell','enabled-extensions',
                     "['omdrop-test@local', 'omdrop-desktop@local']"],check=True)
     subprocess.run(['gsettings','set','org.gnome.shell','disable-user-extensions','false'],check=True)
+    demo_dir = os.environ.get('OMDROP_DEMO_DIR')
+    if demo_dir:
+        Path(demo_dir).mkdir(parents=True,exist_ok=True)
+        for key,value in [('picture-uri',''),('picture-uri-dark',''),('primary-color','#17232c'),('color-shading-type','solid')]:
+            subprocess.run(['gsettings','set','org.gnome.desktop.background',key,value],check=True)
     wayland_display = f'omdrop-desktop-test-{os.getpid()}'
     shell = subprocess.Popen(['gnome-shell','--headless','--wayland','--no-x11',
                               '--wayland-display',wayland_display,
@@ -68,6 +73,12 @@ def inside():
         evaluate('global.odTest._state.receiving=true; global.odTest._state.visible=true; global.odTest._scanWanted=true; global.odTest._render(); global.odTest._loadPeers(); true')
         time.sleep(0.5)
         assert evaluate('global.odTest._rows.size')==2
+        if demo_dir:
+            evaluate('global.odTest._epoch++; global.odTest._lastStatus=Date.now(); global.odTest._statusAt=GLib.get_monotonic_time(); global.odTest._state={...global.odTest._state,receiving:true,visible:true,remaining:600,name:"Demo computer",dir:"~/Downloads"}; global.odTest._render(); true')
+            time.sleep(0.3)
+            destination = json.dumps(str(Path(demo_dir)/'gnome-panel.png'))
+            evaluate('(async()=>{ const actor=global.odTest._button.menu.actor; const [x,y]=actor.get_transformed_position(); const stream=Gio.File.new_for_path('+destination+').replace(null,false,Gio.FileCreateFlags.REPLACE_DESTINATION,null); await new Shell.Screenshot().screenshot_area(Math.floor(x),Math.floor(y),Math.ceil(actor.width),Math.ceil(actor.height),stream); stream.close(null); return true; })()')
+            print('Captured GNOME demo menu',flush=True)
         evaluate('global.odTest._prompt("Demo","Test dialog","Demo computer",()=>{}); true')
         assert evaluate('global.odTest._dialogs.size')==1
         evaluate('for (const d of global.odTest._dialogs) d.close(); global.odTest.disable(); true')
@@ -78,6 +89,24 @@ def inside():
         gtk_env = os.environ.copy()
         gtk_env.update(GDK_BACKEND='wayland',WAYLAND_DISPLAY=wayland_display,
                        GTK_USE_PORTAL='0',GTK_A11Y='none',GTK_IM_MODULE='simple')
+        if demo_dir:
+            evaluate('global.odTest._button.menu.close(); Main.messageTray._bannerBin.hide(); true')
+            demo = subprocess.Popen([sys.executable,str(ROOT/'tools/demo_sender.py')],env=gtk_env)
+            try:
+                for _ in range(100):
+                    time.sleep(0.3)
+                    geometry = evaluate('(()=>{const win=global.get_window_actors().map(a=>a.meta_window).find(w=>w.get_title()==="Omdrop · Send files"); if(!win)return null; const r=win.get_frame_rect();return {x:r.x,y:r.y,width:r.width,height:r.height};})()')
+                    if geometry and geometry['width'] > 100 and geometry['height'] > 100:
+                        break
+                else:
+                    raise RuntimeError('Demo sender did not appear')
+                time.sleep(2)
+                destination = json.dumps(str(Path(demo_dir)/'nautilus-sender.png'))
+                evaluate('(async()=>{const r='+json.dumps(geometry)+'; const stream=Gio.File.new_for_path('+destination+').replace(null,false,Gio.FileCreateFlags.REPLACE_DESTINATION,null); await new Shell.Screenshot().screenshot_area(r.x,r.y,r.width,r.height,stream);stream.close(null);return true;})()')
+                print('Captured GTK demo sender',flush=True)
+            finally:
+                demo.terminate()
+                demo.wait(timeout=6)
         subprocess.run([sys.executable,str(ROOT/'tests/ui_smoke.py')],env=gtk_env,check=True,timeout=45)
     finally:
         shell.terminate()
